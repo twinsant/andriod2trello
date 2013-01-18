@@ -7,7 +7,7 @@ public class TrelloApi extends DefaultApi10a
 {
 	private static final String REQUEST_TOKEN_URL = "https://trello.com/1/OAuthGetRequestToken";
 	private static final String ACCESS_TOKEN_URL = "https://trello.com/1/OAuthGetAccessToken";
-	private static final String AUTHORIZE_URL = "https://trello.com/1/OAuthAuthorizeToken?oauth_token=%s";
+	private static final String AUTHORIZE_URL = "https://trello.com/1/OAuthAuthorizeToken?name=Android2Trello&scope=read,write&oauth_token=%s";
 
 	@Override
 	public String getRequestTokenEndpoint()
