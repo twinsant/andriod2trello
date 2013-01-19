@@ -2,6 +2,7 @@ package com.twinsant.android2trello;
 
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.net.URLEncoder;
 
 import org.scribe.builder.ServiceBuilder;
 import org.scribe.model.OAuthRequest;
@@ -72,15 +73,27 @@ public class TrelloOAuthActivity extends Activity {
 	    		if (host.equals("android2trello.twinsant.com")) {
 	    			Uri uri=Uri.parse(url);
 	    			String oauth_verifier = uri.getQueryParameter("oauth_verifier");
-	        		System.out.println(oauth_verifier);
 	                Verifier v = new Verifier(oauth_verifier);
 	                Token accessToken = service.getAccessToken(requestToken, v);
-	                String token = accessToken.getToken();
 	                
-	                OAuthRequest request = new OAuthRequest(Verb.GET, "http://api.twitter.com/1/account/verify_credentials.xml");
+	                OAuthRequest request = new OAuthRequest(Verb.GET, "https://trello.com/1/members/me?fields=username&boards=open&board_fields=name");
 	                service.signRequest(accessToken, request); // the access token from step 4
 	                Response response = request.send();
+	                //System.out.println(response.getBody());
+	                
+	                String board_id = "50f5f5ab08c2e28877008677";
+	                request = new OAuthRequest(Verb.GET, "https://trello.com/1/boards/" + board_id + "?fields=name&lists=open&list_fields=name,pos");
+	                service.signRequest(accessToken, request); // the access token from step 4
+	                response = request.send();
+	                //System.out.println(response.getBody());
+	                
+	                String idList = "50f5f5ab08c2e28877008678";
+	                request = new OAuthRequest(Verb.POST, "https://trello.com/1/cards/?idList=" + idList + "&name=" + 
+	                URLEncoder.encode("≤‚ ‘") + "&pos=top");
+	                service.signRequest(accessToken, request); // the access token from step 4
+	                response = request.send();
 	                System.out.println(response.getBody());
+	                
 	    			return true;
 	    		}
 			} catch (MalformedURLException e) {
