@@ -2,59 +2,37 @@ package com.twinsant.android2trello;
 
 import java.net.MalformedURLException;
 import java.net.URL;
-import java.net.URLEncoder;
 
-import org.scribe.builder.ServiceBuilder;
-import org.scribe.model.OAuthRequest;
-import org.scribe.model.Response;
 import org.scribe.model.Token;
-import org.scribe.model.Verb;
-import org.scribe.model.Verifier;
-import org.scribe.oauth.OAuthService;
 
 import android.net.Uri;
 import android.os.Bundle;
 import android.app.Activity;
 import android.content.Context;
-import android.view.Menu;
+import android.content.Intent;
 import android.webkit.JsResult;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
 import android.widget.Toast;
 
 public class TrelloOAuthActivity extends Activity {
-
+	private AndrelloApplication app;
     private WebView myWebView;
-    private OAuthService service;
-    private Token requestToken;
 
 	@Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         
-        service = new ServiceBuilder()
-        .provider(TrelloApi.class)
-        .apiKey("e65da061e7d7575e01ac1aa758c4ba86")
-        .apiSecret("e4275c46827eebf137a0bb41b5b65af404d58650c8738b8fdb93a55e8d5e1431")
-        .callback("http://android2trello.twinsant.com/callback")
-        .build();
+        app = (AndrelloApplication)getApplication();
         
-        requestToken = service.getRequestToken();
-        
-        String authUrl = service.getAuthorizationUrl(requestToken);
+        Intent intent = getIntent();
+        String authUrl = intent.getStringExtra(AndrelloApplication.EXTRA_AUTHURL);
         
         myWebView = (WebView) findViewById(R.id.webview);
         final Activity activity = this;
         myWebView.setWebViewClient(new MyWebViewClient(activity));
         myWebView.loadUrl(authUrl);
-    }
-
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        // Inflate the menu; this adds items to the action bar if it is present.
-        getMenuInflater().inflate(R.menu.activity_main, menu);
-        return true;
     }
     
     final class MyWebViewClient extends WebViewClient {
@@ -70,29 +48,11 @@ public class TrelloOAuthActivity extends Activity {
 			try {
 				urlCallbak = new URL(url);
 	    		String host = urlCallbak.getHost();
-	    		if (host.equals("android2trello.twinsant.com")) {
+	    		if (host.equals(AndrelloApplication.HOST_CALLBACK)) {
 	    			Uri uri=Uri.parse(url);
 	    			String oauth_verifier = uri.getQueryParameter("oauth_verifier");
-	                Verifier v = new Verifier(oauth_verifier);
-	                Token accessToken = service.getAccessToken(requestToken, v);
-	                
-	                OAuthRequest request = new OAuthRequest(Verb.GET, "https://trello.com/1/members/me?fields=username&boards=open&board_fields=name");
-	                service.signRequest(accessToken, request); // the access token from step 4
-	                Response response = request.send();
-	                //System.out.println(response.getBody());
-	                
-	                String board_id = "50f5f5ab08c2e28877008677";
-	                request = new OAuthRequest(Verb.GET, "https://trello.com/1/boards/" + board_id + "?fields=name&lists=open&list_fields=name,pos");
-	                service.signRequest(accessToken, request); // the access token from step 4
-	                response = request.send();
-	                //System.out.println(response.getBody());
-	                
-	                String idList = "50f5f5ab08c2e28877008678";
-	                request = new OAuthRequest(Verb.POST, "https://trello.com/1/cards/?idList=" + idList + "&name=" + 
-	                URLEncoder.encode("≤‚ ‘") + "&pos=top");
-	                service.signRequest(accessToken, request); // the access token from step 4
-	                response = request.send();
-	                System.out.println(response.getBody());
+	    			Token accessToken = app.getAccessToken(oauth_verifier);
+	    			app.saveAccessToken(accessToken);
 	                
 	    			return true;
 	    		}
