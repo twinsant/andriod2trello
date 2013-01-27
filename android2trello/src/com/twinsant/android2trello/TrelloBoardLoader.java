@@ -1,33 +1,19 @@
 package com.twinsant.android2trello;
 
-import java.util.ArrayList;
 import java.util.List;
+
+import org.json.JSONObject;
 
 import android.content.Context;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.content.AsyncTaskLoader;
 
-public class TrelloBoardLoader extends AsyncTaskLoader<List<String>> {
+public class TrelloBoardLoader extends AsyncTaskLoader<List<JSONObject>> {
 	private AndrelloApplication app;
-
-	@Override
-	protected void onForceLoad() {
-		super.onForceLoad();
-	}
-
-	@Override
-	protected void onReset() {
-		super.onReset();
-	}
 
 	@Override
 	protected void onStartLoading() {
 		forceLoad();
-	}
-
-	@Override
-	protected void onStopLoading() {
-		super.onStopLoading();
 	}
 
 	public TrelloBoardLoader(Context context) {
@@ -38,7 +24,7 @@ public class TrelloBoardLoader extends AsyncTaskLoader<List<String>> {
 	}
 
 	@Override
-	public List<String> loadInBackground() {
+	public List<JSONObject> loadInBackground() {
 		return app.getBoards();
 	}
 

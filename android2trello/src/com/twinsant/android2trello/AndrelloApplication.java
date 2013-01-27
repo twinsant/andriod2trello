@@ -90,8 +90,8 @@ public class AndrelloApplication extends Application {
 		return null;
 	}
 
-	public List<String> getBoards() {
-		List<String> boards = new ArrayList<String>();
+	public List<JSONObject> getBoards() {
+		List<JSONObject> boards = new ArrayList<JSONObject>();
 		
 		OAuthRequest request = new OAuthRequest(Verb.GET, "https://trello.com/1/members/me?fields=username&boards=open&board_fields=name");
         trello.signRequest(loadAccessToken(), request); // the access token from step 4
@@ -101,7 +101,7 @@ public class AndrelloApplication extends Application {
 			JSONArray boardsArray = user.getJSONArray("boards");
 			for (int i=0;i<boardsArray.length();i++) {
 				JSONObject board = boardsArray.getJSONObject(i);
-				boards.add(board.getString("name"));
+				boards.add(board);
 			}
 		} catch (JSONException e) {
 			// TODO Auto-generated catch block
