@@ -29,6 +29,7 @@ public class AndrelloApplication extends Application {
 	private static final String PREFS_NAME = "com.twinsant.android2treelo.settings";
 	private static final String PREFS_NAME_SECRET = "com.twinsant.android2treelo.secret"; // static final String could not s1 + "foo"
 	private static final String PREFS_NAME_TOKEN = "com.twinsant.android2treelo.token";
+	public static final String EXTRA_BOARD_ID = "com.twinsant.android2treelo.boardId";
 	
 	private OAuthService trello;
 	private Token requestToken;
@@ -56,13 +57,7 @@ public class AndrelloApplication extends Application {
         Token accessToken = trello.getAccessToken(requestToken, v);
         return accessToken;
         
-        /*
-        
-        String board_id = "50f5f5ab08c2e28877008677";
-        request = new OAuthRequest(Verb.GET, "https://trello.com/1/boards/" + board_id + "?fields=name&lists=open&list_fields=name,pos");
-        trello.signRequest(accessToken, request); // the access token from step 4
-        response = request.send();
-        //System.out.println(response.getBody());
+        /*     
         
         String idList = "50f5f5ab08c2e28877008678";
         request = new OAuthRequest(Verb.POST, "https://trello.com/1/cards/?idList=" + idList + "&name=" + 
@@ -109,6 +104,51 @@ public class AndrelloApplication extends Application {
 		}
         
 		return boards;
+	}
+
+	public List<JSONObject> getLists(String board_id) {
+		List<JSONObject> list = new ArrayList<JSONObject>();
+		
+        OAuthRequest request = new OAuthRequest(Verb.GET, "https://trello.com/1/boards/" + board_id + "?fields=name&lists=open&list_fields=name,pos");
+        trello.signRequest(loadAccessToken(), request); // the access token from step 4
+        Response response = request.send();
+        try {
+        	String body = response.getBody();
+        	
+			JSONObject trelloList = new JSONObject(body);
+			JSONArray listsArray = trelloList.getJSONArray("lists");
+			for (int i=0;i<listsArray.length();i++) {
+				JSONObject obj = listsArray.getJSONObject(i);
+				list.add(obj);
+			}
+		} catch (JSONException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		return list;
+	}
+
+	public List<JSONObject> getCards(String list_id) {
+		List<JSONObject> list = new ArrayList<JSONObject>();
+		
+        OAuthRequest request = new OAuthRequest(Verb.GET, "https://trello.com/1/lists/" + list_id + "?fields=name&cards=open&card_fields=name,pos");
+        trello.signRequest(loadAccessToken(), request); // the access token from step 4
+        Response response = request.send();
+        try {
+        	String body = response.getBody();
+        	System.out.println(body);
+        	
+			JSONObject trelloList = new JSONObject(body);
+			JSONArray listsArray = trelloList.getJSONArray("cards");
+			for (int i=0;i<listsArray.length();i++) {
+				JSONObject obj = listsArray.getJSONObject(i);
+				list.add(obj);
+			}
+		} catch (JSONException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		return list;
 	}
 
 }

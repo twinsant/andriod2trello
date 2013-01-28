@@ -20,6 +20,10 @@
             android:name="com.twinsant.android2trello.TrelloOAuthActivity"
             android:label="@string/app_name" >
         </activity>
+        <activity
+            android:name="com.twinsant.android2trello.FragmentPagerBoard"
+            android:label="@string/app_name" >
+        </activity>
         <activity android:name="com.twinsant.android2trello.TrelloBoardActivity"
             >
         </activity>

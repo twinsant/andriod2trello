@@ -6,15 +6,31 @@ import java.util.List;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.ListFragment;
 import android.support.v4.app.LoaderManager;
 import android.support.v4.content.Loader;
+import android.view.View;
 import android.widget.ArrayAdapter;
+import android.widget.ListView;
 
 public class FragmentBoard extends ListFragment 
 		implements LoaderManager.LoaderCallbacks<List<JSONObject>> {
+	@Override
+	public void onListItemClick(ListView l, View v, int position, long id) {
+		Intent intent = new Intent(getActivity(), FragmentPagerBoard.class);
+		try {
+			intent.putExtra(AndrelloApplication.EXTRA_BOARD_ID, mData.get(position).getString("id"));
+		} catch (JSONException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		startActivity(intent);
+	}
+
 	ArrayAdapter<String> mAdapter;
+	List<JSONObject> mData;
 
 	@Override
 	public void onActivityCreated(Bundle savedInstanceState) {
@@ -33,7 +49,9 @@ public class FragmentBoard extends ListFragment
 
 	@Override
 	public void onLoadFinished(Loader<List<JSONObject>> arg0, List<JSONObject> data) {
-		Iterator<JSONObject> it = data.iterator();
+		mData = data;
+		
+		Iterator<JSONObject> it = mData.iterator();
 		while (it.hasNext()) {
 			JSONObject board = it.next();
 			String name = "Loading...";
