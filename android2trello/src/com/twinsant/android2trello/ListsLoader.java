@@ -8,7 +8,8 @@ import android.content.Context;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.content.AsyncTaskLoader;
 
-public class TrelloListLoader extends AsyncTaskLoader<List<JSONObject>> {
+// Loader must be no static inner class
+public class ListsLoader extends AsyncTaskLoader<List<JSONObject>> {
 	private AndrelloApplication app;
 	private String mListId;
 
@@ -17,7 +18,7 @@ public class TrelloListLoader extends AsyncTaskLoader<List<JSONObject>> {
 		forceLoad();
 	}
 
-	public TrelloListLoader(Context context, String list_id) {
+	public ListsLoader(Context context, String list_id) {
 		super(context);
 		
 		FragmentActivity activity = (FragmentActivity)context;

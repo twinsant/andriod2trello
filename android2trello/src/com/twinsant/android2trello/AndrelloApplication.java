@@ -2,6 +2,7 @@ package com.twinsant.android2trello;
 
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 
 import org.json.JSONArray;
@@ -18,7 +19,7 @@ import org.scribe.oauth.OAuthService;
 import android.app.Application;
 import android.content.SharedPreferences;
 
-public class AndrelloApplication extends Application {
+public class AndrelloApplication extends Application {	
 	private static final String TRELLO_KEY = "e65da061e7d7575e01ac1aa758c4ba86";
 	private static final String TRELLO_SECRET = "e4275c46827eebf137a0bb41b5b65af404d58650c8738b8fdb93a55e8d5e1431";
 	private static final String TRELLO_CALLBACK = "http://android2trello.twinsant.com/callback";
@@ -31,8 +32,13 @@ public class AndrelloApplication extends Application {
 	private static final String PREFS_NAME_TOKEN = "com.twinsant.android2treelo.token";
 	public static final String EXTRA_BOARD_ID = "com.twinsant.android2treelo.boardId";
 	
+	public static final int OAUTH_REQUEST = 0;
+	public static final String TRELLO_HOME = "https://trello.com/home";
+	
 	private OAuthService trello;
 	private Token requestToken;
+	
+	HashMap<String, List<JSONObject>> cache;
 	
 	@Override
 	public void onCreate() {
@@ -44,6 +50,8 @@ public class AndrelloApplication extends Application {
         	.apiSecret(TRELLO_SECRET)
         	.callback(TRELLO_CALLBACK)
         	.build();
+        
+        cache = new HashMap<String, List<JSONObject>>();
 	}
 
 	public String getAuthUrl() {
@@ -57,8 +65,7 @@ public class AndrelloApplication extends Application {
         Token accessToken = trello.getAccessToken(requestToken, v);
         return accessToken;
         
-        /*     
-        
+        /*            
         String idList = "50f5f5ab08c2e28877008678";
         request = new OAuthRequest(Verb.POST, "https://trello.com/1/cards/?idList=" + idList + "&name=" + 
         URLEncoder.encode("≤‚ ‘") + "&pos=top");
@@ -79,13 +86,16 @@ public class AndrelloApplication extends Application {
 		SharedPreferences settings = getSharedPreferences(PREFS_NAME, 0);
 		String token = settings.getString(PREFS_NAME_TOKEN, null);
 		String secret = settings.getString(PREFS_NAME_SECRET, null);
-		if (!token.equals("") && !secret.equals("")) {
+		if (token !=null && secret != null) {
 			return new Token(token, secret);
 		}
 		return null;
 	}
 
 	public List<JSONObject> getBoards() {
+		if (cache.containsKey("boards"))
+			return cache.get("boards");
+		
 		List<JSONObject> boards = new ArrayList<JSONObject>();
 		
 		OAuthRequest request = new OAuthRequest(Verb.GET, "https://trello.com/1/members/me?fields=username&boards=open&board_fields=name");
@@ -98,6 +108,7 @@ public class AndrelloApplication extends Application {
 				JSONObject board = boardsArray.getJSONObject(i);
 				boards.add(board);
 			}
+			cache.put("boards", boards);
 		} catch (JSONException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -107,6 +118,9 @@ public class AndrelloApplication extends Application {
 	}
 
 	public List<JSONObject> getLists(String board_id) {
+		if (cache.containsKey("lists" + board_id))
+			return cache.get("lists" + board_id);
+		
 		List<JSONObject> list = new ArrayList<JSONObject>();
 		
         OAuthRequest request = new OAuthRequest(Verb.GET, "https://trello.com/1/boards/" + board_id + "?fields=name&lists=open&list_fields=name,pos");
@@ -121,6 +135,7 @@ public class AndrelloApplication extends Application {
 				JSONObject obj = listsArray.getJSONObject(i);
 				list.add(obj);
 			}
+			cache.put("lists" + board_id, list);
 		} catch (JSONException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -129,6 +144,9 @@ public class AndrelloApplication extends Application {
 	}
 
 	public List<JSONObject> getCards(String list_id) {
+		if (cache.containsKey("cards" + list_id))
+			return cache.get("cards" + list_id);
+		
 		List<JSONObject> list = new ArrayList<JSONObject>();
 		
         OAuthRequest request = new OAuthRequest(Verb.GET, "https://trello.com/1/lists/" + list_id + "?fields=name&cards=open&card_fields=name,pos");
@@ -136,7 +154,6 @@ public class AndrelloApplication extends Application {
         Response response = request.send();
         try {
         	String body = response.getBody();
-        	System.out.println(body);
         	
 			JSONObject trelloList = new JSONObject(body);
 			JSONArray listsArray = trelloList.getJSONArray("cards");
@@ -144,11 +161,23 @@ public class AndrelloApplication extends Application {
 				JSONObject obj = listsArray.getJSONObject(i);
 				list.add(obj);
 			}
+			cache.put("cards" + list_id, list);
 		} catch (JSONException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 		return list;
+	}
+
+	public String getBoardId(int position) {
+		try {
+			return cache.get("boards").get(position).getString("id");
+		} catch (JSONException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
+		return null;
 	}
 
 }

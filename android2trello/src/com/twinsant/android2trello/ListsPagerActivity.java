@@ -19,7 +19,7 @@ import android.support.v4.content.Loader;
 import android.support.v4.view.ViewPager;
 import android.widget.ArrayAdapter;
 
-public class FragmentPagerBoard extends FragmentActivity {
+public class ListsPagerActivity extends FragmentActivity {
 	private AndrelloApplication app;
 	
 	private ListPagerAdapter mAdapter;
@@ -28,7 +28,7 @@ public class FragmentPagerBoard extends FragmentActivity {
 	@Override
 	protected void onCreate(Bundle arg0) {
 		super.onCreate(arg0);
-		setContentView(R.layout.fragment_pager_board);
+		setContentView(R.layout.activity_lists_pager);
 		app = (AndrelloApplication)getApplication();
 		
 		Intent intent = getIntent();
@@ -51,7 +51,7 @@ public class FragmentPagerBoard extends FragmentActivity {
 		}
 	}
 	
-	public static class ListPagerAdapter extends FragmentPagerAdapter {
+	public static class ListPagerAdapter extends FragmentPagerAdapter {	
 		List<JSONObject> _lists;
 		
 		ListPagerAdapter(FragmentManager fm, List<JSONObject> result) {
@@ -87,6 +87,8 @@ public class FragmentPagerBoard extends FragmentActivity {
 		implements LoaderManager.LoaderCallbacks<List<JSONObject>>{
 		
 		ArrayAdapter<String> mAdapter;
+		String mId;
+		String mName;
 		
 		@Override
 		public void onActivityCreated(Bundle savedInstanceState) {
@@ -109,9 +111,6 @@ public class FragmentPagerBoard extends FragmentActivity {
 			}
 		}
 
-		String mId;
-		String mName;
-		
 		static ArrayListFragment newInstance(String id, String name) {
 			ArrayListFragment f = new ArrayListFragment();
 			Bundle args = new Bundle();
@@ -124,7 +123,7 @@ public class FragmentPagerBoard extends FragmentActivity {
 
 		@Override
 		public Loader<List<JSONObject>> onCreateLoader(int arg0, Bundle arg1) {
-			return new TrelloListLoader(getActivity(), mId);
+			return new ListsLoader(getActivity(), mId);
 		}
 
 		@Override

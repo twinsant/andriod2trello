@@ -17,14 +17,14 @@
         android:theme="@style/AppTheme" 
         android:name="com.twinsant.android2trello.AndrelloApplication">
         <activity
-            android:name="com.twinsant.android2trello.TrelloOAuthActivity"
+            android:name="com.twinsant.android2trello.OAuthActivity"
             android:label="@string/app_name" >
         </activity>
         <activity
-            android:name="com.twinsant.android2trello.FragmentPagerBoard"
+            android:name="com.twinsant.android2trello.ListsPagerActivity"
             android:label="@string/app_name" >
         </activity>
-        <activity android:name="com.twinsant.android2trello.TrelloBoardActivity"
+        <activity android:name="com.twinsant.android2trello.BoardsActivity"
             >
         </activity>
         <activity
@@ -32,7 +32,6 @@
             android:label="@string/title_activity_start" >
                         <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
-
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>

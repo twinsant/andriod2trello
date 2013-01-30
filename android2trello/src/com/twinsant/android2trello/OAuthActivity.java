@@ -15,14 +15,14 @@ import android.webkit.WebView;
 import android.webkit.WebViewClient;
 import android.widget.Toast;
 
-public class TrelloOAuthActivity extends Activity {
-	private AndrelloApplication app;
-    private WebView myWebView;
+public class OAuthActivity extends Activity {
+	AndrelloApplication app;
+    WebView myWebView;
 
 	@Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_main);
+        setContentView(R.layout.activity_oauth);
         
         app = (AndrelloApplication)getApplication();
         
@@ -30,12 +30,12 @@ public class TrelloOAuthActivity extends Activity {
         String authUrl = intent.getStringExtra(AndrelloApplication.EXTRA_AUTHURL);
         
         myWebView = (WebView) findViewById(R.id.webview);
-        final Activity activity = this;
-        myWebView.setWebViewClient(new MyWebViewClient(activity));
+        myWebView.setWebViewClient(new MyWebViewClient(this));
+        
         myWebView.loadUrl(authUrl);
     }
     
-    final class MyWebViewClient extends WebViewClient {
+    class MyWebViewClient extends WebViewClient {
     	Context mContext;
     	
     	MyWebViewClient(Context c) {
@@ -44,6 +44,12 @@ public class TrelloOAuthActivity extends Activity {
     	
     	@Override
     	public boolean shouldOverrideUrlLoading(WebView view, String url) {
+    		if (url.equals(AndrelloApplication.TRELLO_HOME)) {
+    			Activity activity = (Activity)mContext;
+    			activity.setResult(RESULT_CANCELED);
+    			activity.finishActivity(AndrelloApplication.OAUTH_REQUEST);
+    			return true;
+    		}
     		URL urlCallbak;
 			try {
 				urlCallbak = new URL(url);
@@ -54,6 +60,9 @@ public class TrelloOAuthActivity extends Activity {
 	    			Token accessToken = app.getAccessToken(oauth_verifier);
 	    			app.saveAccessToken(accessToken);
 	                
+	    			Activity activity = (Activity)mContext;
+	    			activity.setResult(RESULT_OK);
+	    			activity.finishActivity(AndrelloApplication.OAUTH_REQUEST);
 	    			return true;
 	    		}
 			} catch (MalformedURLException e) {

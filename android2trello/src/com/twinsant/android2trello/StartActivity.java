@@ -5,45 +5,50 @@ import org.scribe.model.Token;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.app.Activity;
+import android.content.Context;
 import android.content.Intent;
 
 public class StartActivity extends Activity {
-	private AndrelloApplication app;
-	
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_start);
 		
-		app = (AndrelloApplication)getApplication();
-		
+		AndrelloApplication app = (AndrelloApplication)getApplication();
 		Token accessToken = app.loadAccessToken();
 		if (accessToken == null) {
 			AuthUrlAsyncTask task = new AuthUrlAsyncTask(this);
-			task.execute();
+			task.execute(app);
 		}else{
-			// Start list activity
-			Intent intent = new Intent(this, TrelloBoardActivity.class);
+			Intent intent = new Intent(this, BoardsActivity.class);
 			startActivity(intent);
 		}
 	}
+	
+	protected void onActivityResult(int requestCode, int resultCode) {
+		if (requestCode == AndrelloApplication.OAUTH_REQUEST) {
+			if (resultCode == RESULT_OK) {
+				Intent intent = new Intent(this, BoardsActivity.class);
+				startActivity(intent);
+			}
+		}
+	}
 
-	class AuthUrlAsyncTask extends AsyncTask<Void, Void, String> {
-		private StartActivity _activity;
+	class AuthUrlAsyncTask extends AsyncTask<AndrelloApplication, Void, String> {
+		private Context mContext;
 		
-		AuthUrlAsyncTask(StartActivity activity) {
-			_activity = activity;
+		AuthUrlAsyncTask(Context context) {
+			mContext = context;
 		}
 		@Override
-		protected String doInBackground(Void... params) {
-			String authUrl = _activity.app.getAuthUrl();
-			return authUrl;
+		protected String doInBackground(AndrelloApplication... params) {
+			return params[0].getAuthUrl();
 		}		
 		@Override
 		protected void onPostExecute(String result) {
-			Intent intent = new Intent(_activity, TrelloOAuthActivity.class);
+			Intent intent = new Intent(mContext, OAuthActivity.class);
 			intent.putExtra(AndrelloApplication.EXTRA_AUTHURL, result);
-			startActivity(intent);
+			startActivityForResult(intent, AndrelloApplication.OAUTH_REQUEST);
 		}
 	}
 

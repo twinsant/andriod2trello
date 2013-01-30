@@ -15,22 +15,17 @@ import android.view.View;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
 
-public class FragmentBoard extends ListFragment 
+public class BoardsFragment extends ListFragment 
 		implements LoaderManager.LoaderCallbacks<List<JSONObject>> {
+	ArrayAdapter<String> mAdapter;
+	
 	@Override
 	public void onListItemClick(ListView l, View v, int position, long id) {
-		Intent intent = new Intent(getActivity(), FragmentPagerBoard.class);
-		try {
-			intent.putExtra(AndrelloApplication.EXTRA_BOARD_ID, mData.get(position).getString("id"));
-		} catch (JSONException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
+		Intent intent = new Intent(getActivity(), ListsPagerActivity.class);
+		AndrelloApplication app = (AndrelloApplication)getActivity().getApplication();
+		intent.putExtra(AndrelloApplication.EXTRA_BOARD_ID, app.getBoardId(position));
 		startActivity(intent);
 	}
-
-	ArrayAdapter<String> mAdapter;
-	List<JSONObject> mData;
 
 	@Override
 	public void onActivityCreated(Bundle savedInstanceState) {
@@ -44,14 +39,12 @@ public class FragmentBoard extends ListFragment
 
 	@Override
 	public Loader<List<JSONObject>> onCreateLoader(int arg0, Bundle arg1) {
-		return new TrelloBoardLoader(getActivity());
+		return new BoardsLoader(getActivity());
 	}
 
 	@Override
-	public void onLoadFinished(Loader<List<JSONObject>> arg0, List<JSONObject> data) {
-		mData = data;
-		
-		Iterator<JSONObject> it = mData.iterator();
+	public void onLoadFinished(Loader<List<JSONObject>> arg0, List<JSONObject> data) {		
+		Iterator<JSONObject> it = data.iterator();
 		while (it.hasNext()) {
 			JSONObject board = it.next();
 			String name = "Loading...";
@@ -69,5 +62,4 @@ public class FragmentBoard extends ListFragment
 	public void onLoaderReset(Loader<List<JSONObject>> arg0) {
 		// TODO
 	}
-
 }
