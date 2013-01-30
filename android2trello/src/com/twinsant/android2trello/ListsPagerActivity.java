@@ -17,7 +17,11 @@ import android.support.v4.app.ListFragment;
 import android.support.v4.app.LoaderManager;
 import android.support.v4.content.Loader;
 import android.support.v4.view.ViewPager;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
+import android.widget.TextView;
 
 public class ListsPagerActivity extends FragmentActivity {
 	private AndrelloApplication app;
@@ -109,6 +113,15 @@ public class ListsPagerActivity extends FragmentActivity {
 				mId = args.getString("id");
 				mName = args.getString("name");
 			}
+		}
+
+		@Override
+		public View onCreateView(LayoutInflater inflater, ViewGroup container,
+				Bundle savedInstanceState) {
+			View view = inflater.inflate(R.layout.fragment_pager_list, container, false);
+			TextView textView = (TextView)view.findViewById(R.id.text);
+			textView.setText(mName);
+			return view;
 		}
 
 		static ArrayListFragment newInstance(String id, String name) {
