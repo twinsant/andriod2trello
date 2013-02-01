@@ -21,7 +21,9 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
+import android.widget.Button;
 import android.widget.TextView;
+import android.widget.Toast;
 
 public class ListsPagerActivity extends FragmentActivity {
 	private AndrelloApplication app;
@@ -88,7 +90,7 @@ public class ListsPagerActivity extends FragmentActivity {
 	}
 	
 	public static class ArrayListFragment extends ListFragment
-		implements LoaderManager.LoaderCallbacks<List<JSONObject>>{
+		implements LoaderManager.LoaderCallbacks<List<JSONObject>>, AddCardDialogFragment.AddCardDialogListener{
 		
 		ArrayAdapter<String> mAdapter;
 		String mId;
@@ -121,6 +123,16 @@ public class ListsPagerActivity extends FragmentActivity {
 			View view = inflater.inflate(R.layout.fragment_pager_list, container, false);
 			TextView textView = (TextView)view.findViewById(R.id.text);
 			textView.setText(mName);
+			
+			Button button = (Button)view.findViewById(R.id.button);
+			button.setOnClickListener(new View.OnClickListener() {				
+				@Override
+				public void onClick(View v) {
+					AddCardDialogFragment newFragment = new AddCardDialogFragment();
+					newFragment.setListener(ArrayListFragment.this);
+					newFragment.show(getFragmentManager(), "addCard");
+				}
+			});
 			return view;
 		}
 
@@ -159,6 +171,12 @@ public class ListsPagerActivity extends FragmentActivity {
 		@Override
 		public void onLoaderReset(Loader<List<JSONObject>> arg0) {
 			// TODO Auto-generated method stub		
+		}
+		
+		@Override
+		public void onDialogPositiveClick(String text) {
+			Toast.makeText(getActivity(), mId, Toast.LENGTH_SHORT).show();
+			Toast.makeText(getActivity(), text, Toast.LENGTH_LONG).show();
 		}
 	}
 }
