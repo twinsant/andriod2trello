@@ -16,7 +16,7 @@ public class AddCardDialogFragment extends DialogFragment {
 	}
 
 	public interface AddCardDialogListener {
-		public void onDialogPositiveClick(String text);
+		public void onAddCard(String text);
 	}
 	
 	AddCardDialogListener mListener;
@@ -34,7 +34,7 @@ public class AddCardDialogFragment extends DialogFragment {
 				public void onClick(DialogInterface dialog, int which) {
 					String text = editText.getText().toString();
 					if (!text.trim().equals("")) {
-						mListener.onDialogPositiveClick(text);
+						mListener.onAddCard(text);
 					}
 				}
 			})

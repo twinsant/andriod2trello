@@ -1,6 +1,7 @@
 package com.twinsant.android2trello;
 
 
+import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -178,6 +179,28 @@ public class AndrelloApplication extends Application {
 		}
 		
 		return null;
+	}
+
+	public JSONObject addCard(String listId, String text) {
+		OAuthRequest request = new OAuthRequest(Verb.POST, "https://trello.com/1/cards/?idList=" + listId + "&name=" + 
+        URLEncoder.encode(text) + "&pos=top");
+        trello.signRequest(loadAccessToken(), request); // the access token from step 4
+        Response response = request.send();
+        String body = response.getBody();
+        
+        try {
+			JSONObject obj = new JSONObject(body);
+			
+			List<JSONObject> list = cache.get("cards" + listId);
+			if (list !=null ) {
+				list.add(0, obj);
+			}
+			return obj;
+		} catch (JSONException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+        return null;
 	}
 
 }

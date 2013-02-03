@@ -6,6 +6,7 @@ import java.util.List;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import android.content.Context;
 import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Bundle;
@@ -17,13 +18,14 @@ import android.support.v4.app.ListFragment;
 import android.support.v4.app.LoaderManager;
 import android.support.v4.content.Loader;
 import android.support.v4.view.ViewPager;
+import android.util.SparseArray;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.TextView;
-import android.widget.Toast;
+
 
 public class ListsPagerActivity extends FragmentActivity {
 	private AndrelloApplication app;
@@ -35,11 +37,11 @@ public class ListsPagerActivity extends FragmentActivity {
 	protected void onCreate(Bundle arg0) {
 		super.onCreate(arg0);
 		setContentView(R.layout.activity_lists_pager);
+		
 		app = (AndrelloApplication)getApplication();
 		
 		Intent intent = getIntent();
-        String board_id = intent.getStringExtra(AndrelloApplication.EXTRA_BOARD_ID);
-        
+        String board_id = intent.getStringExtra(AndrelloApplication.EXTRA_BOARD_ID);      
 		ListsAsyncTask task = new ListsAsyncTask();
 		task.execute(board_id);
 	}
@@ -57,20 +59,28 @@ public class ListsPagerActivity extends FragmentActivity {
 		}
 	}
 	
-	public static class ListPagerAdapter extends FragmentPagerAdapter {	
-		List<JSONObject> _lists;
+	public static class ListPagerAdapter extends FragmentPagerAdapter {
+		List<JSONObject> mLists;
+		SparseArray<ListFragment>mPages;
+		
+		@Override
+		public void destroyItem(ViewGroup container, int position, Object object) {
+			super.destroyItem(container, position, object);
+			mPages.remove(position);
+		}
 		
 		ListPagerAdapter(FragmentManager fm, List<JSONObject> result) {
 			super(fm);
-			_lists = result;
+			mLists = result;
+			mPages = new SparseArray<ListFragment>();
 		}
 		@Override
 		public int getCount() {
-			return _lists.size();
+			return mLists.size();
 		}
 		@Override
 		public Fragment getItem(int position) {
-			JSONObject list = _lists.get(position);
+			JSONObject list = mLists.get(position);
 			String id = "Loading...";
 			try {
 				id = list.getString("id");
@@ -85,11 +95,17 @@ public class ListsPagerActivity extends FragmentActivity {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
-			return ArrayListFragment.newInstance(id, name);
+			if (mPages.get(position) != null) {
+				return mPages.get(position);
+			}else{
+				ListFragment fragment = CardsListFragment.newInstance(id, name);
+				mPages.put(position, fragment);
+				return fragment;
+			}
 		}
 	}
 	
-	public static class ArrayListFragment extends ListFragment
+	public static class CardsListFragment extends ListFragment
 		implements LoaderManager.LoaderCallbacks<List<JSONObject>>, AddCardDialogFragment.AddCardDialogListener{
 		
 		ArrayAdapter<String> mAdapter;
@@ -129,15 +145,15 @@ public class ListsPagerActivity extends FragmentActivity {
 				@Override
 				public void onClick(View v) {
 					AddCardDialogFragment newFragment = new AddCardDialogFragment();
-					newFragment.setListener(ArrayListFragment.this);
+					newFragment.setListener(CardsListFragment.this);
 					newFragment.show(getFragmentManager(), "addCard");
 				}
 			});
 			return view;
 		}
 
-		static ArrayListFragment newInstance(String id, String name) {
-			ArrayListFragment f = new ArrayListFragment();
+		static CardsListFragment newInstance(String id, String name) {
+			CardsListFragment f = new CardsListFragment();
 			Bundle args = new Bundle();
 			args.putString("id", id);
 			args.putString("name", name);
@@ -174,9 +190,34 @@ public class ListsPagerActivity extends FragmentActivity {
 		}
 		
 		@Override
-		public void onDialogPositiveClick(String text) {
-			Toast.makeText(getActivity(), mId, Toast.LENGTH_SHORT).show();
-			Toast.makeText(getActivity(), text, Toast.LENGTH_LONG).show();
+		public void onAddCard(String text) {
+			AddCardAsyncTask task = new AddCardAsyncTask(getActivity());
+			task.execute(mId, text);
+		}
+		
+		class AddCardAsyncTask extends AsyncTask<String, Void, JSONObject> {
+			@Override
+			protected void onPostExecute(JSONObject result) {
+				ListsPagerActivity activity = (ListsPagerActivity)mContext;
+				int position = activity.mPager.getCurrentItem();
+				CardsListFragment fragment = (CardsListFragment)activity.mAdapter.getItem(position);
+				fragment.mAdapter.notifyDataSetChanged();
+				super.onPostExecute(result);
+			}
+			Context mContext;
+			AddCardAsyncTask(Context context) {
+				mContext = context;
+			}
+			@Override
+			protected JSONObject doInBackground(String... params) {
+				String listId = params[0];
+				String text = params[1];
+				
+				AndrelloApplication app = (AndrelloApplication)mContext.getApplicationContext();
+				
+				return app.addCard(listId, text);
+			}
+			
 		}
 	}
 }

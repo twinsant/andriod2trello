@@ -1,3 +1,21 @@
-Trello client for Android 2.2.
+Andrello: Trello client for Android 2.2+
+========================================
+
+Features
+--------
+Preview version
+* Safely access your Trello account, demostrate how to use Scribe OAuth library
+* View your Trello boards and cards in a fashional way, demostrate how to use Android ListFragment and ViewPager
+* Smooth UI when request data from Trello service, demostrate how to use AsyncTask and AsyncTaskLoader
+* Quick add card in the list
+* Hmm, ugly UI... will be improved in the next release
+
+Roadmap
+-------
+* 2013.3.31 Preview version, in GitHub
+* 2013.6.30 Release candidate, in Kickstarter
+* 2013.9.30 Paid or Free version in Goolge Play
 
 [Dev progress](https://trello.com/board/0-android2trello/50f5f5ab08c2e28877008677)
+
+R&D by twinsant at nights.
