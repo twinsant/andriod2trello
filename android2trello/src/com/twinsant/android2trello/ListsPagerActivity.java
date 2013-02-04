@@ -168,9 +168,11 @@ public class ListsPagerActivity extends FragmentActivity {
 		}
 
 		@Override
-		public void onLoadFinished(Loader<List<JSONObject>> arg0,
-				List<JSONObject> arg1) {
-			Iterator<JSONObject> it = arg1.iterator();
+		public void onLoadFinished(Loader<List<JSONObject>> loader,
+				List<JSONObject> result) {
+			mAdapter.clear();
+			
+			Iterator<JSONObject> it = result.iterator();
 			while (it.hasNext()) {
 				JSONObject board = it.next();
 				String name = "Loading...";
@@ -186,7 +188,7 @@ public class ListsPagerActivity extends FragmentActivity {
 
 		@Override
 		public void onLoaderReset(Loader<List<JSONObject>> arg0) {
-			// TODO Auto-generated method stub		
+			System.out.println("reset");		
 		}
 		
 		@Override
@@ -201,7 +203,7 @@ public class ListsPagerActivity extends FragmentActivity {
 				ListsPagerActivity activity = (ListsPagerActivity)mContext;
 				int position = activity.mPager.getCurrentItem();
 				CardsListFragment fragment = (CardsListFragment)activity.mAdapter.getItem(position);
-				fragment.mAdapter.notifyDataSetChanged();
+				fragment.getLoaderManager().restartLoader(0, null, fragment);
 				super.onPostExecute(result);
 			}
 			Context mContext;
