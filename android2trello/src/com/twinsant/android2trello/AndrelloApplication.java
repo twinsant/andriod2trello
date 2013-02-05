@@ -203,4 +203,8 @@ public class AndrelloApplication extends Application {
         return null;
 	}
 
+	public void clear_list_cache(String listId) {
+		cache.remove("cards" + listId);
+	}
+
 }

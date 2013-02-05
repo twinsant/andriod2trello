@@ -4,11 +4,11 @@ import org.scribe.model.Token;
 
 import android.os.AsyncTask;
 import android.os.Bundle;
-import android.app.Activity;
+import android.support.v4.app.FragmentActivity;
 import android.content.Context;
 import android.content.Intent;
 
-public class StartActivity extends Activity {
+public class StartActivity extends FragmentActivity {
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
@@ -22,6 +22,8 @@ public class StartActivity extends Activity {
 		}else{
 			Intent intent = new Intent(this, BoardsActivity.class);
 			startActivity(intent);
+			// FIXME: not work
+			getSupportFragmentManager().popBackStack();
 		}
 	}
 	

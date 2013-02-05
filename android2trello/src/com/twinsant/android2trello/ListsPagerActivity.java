@@ -140,13 +140,26 @@ public class ListsPagerActivity extends FragmentActivity {
 			TextView textView = (TextView)view.findViewById(R.id.text);
 			textView.setText(mName);
 			
-			Button button = (Button)view.findViewById(R.id.button);
+			Button button = (Button)view.findViewById(R.id.add_card);
 			button.setOnClickListener(new View.OnClickListener() {				
 				@Override
 				public void onClick(View v) {
 					AddCardDialogFragment newFragment = new AddCardDialogFragment();
 					newFragment.setListener(CardsListFragment.this);
 					newFragment.show(getFragmentManager(), "addCard");
+				}
+			});
+			
+			final CardsListFragment fragment = this;
+			button = (Button)view.findViewById(R.id.refresh_list);
+			button.setOnClickListener(new View.OnClickListener() {
+				
+				@Override
+				public void onClick(View v) {
+					AndrelloApplication app = (AndrelloApplication)fragment.getActivity().getApplicationContext();
+					app.clear_list_cache(mId);
+					
+					fragment.getLoaderManager().restartLoader(0, null, fragment);
 				}
 			});
 			return view;

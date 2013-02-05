@@ -7,5 +7,6 @@
     <string name="empty_boards">No boards</string>
 	<string name="empty_cards">No cards</string>
 	<string name="add_card">Add</string>
+	<string name="refresh_list">Refresh</string>
 	<string name="cancel">Cancel</string>
 </resources>
