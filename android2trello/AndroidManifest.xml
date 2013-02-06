@@ -29,7 +29,8 @@
         </activity>
         <activity
             android:name="com.twinsant.android2trello.StartActivity"
-            android:label="@string/title_activity_start" >
+            android:label="@string/title_activity_start"
+            android:noHistory="true" >
                         <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.LAUNCHER" />
