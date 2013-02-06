@@ -14,7 +14,7 @@
         android:allowBackup="true"
         android:icon="@drawable/ic_launcher"
         android:label="@string/app_name"
-        android:theme="@style/AppTheme" 
+        android:theme="@style/AndrelloTheme" 
         android:name="com.twinsant.android2trello.AndrelloApplication">
         <activity
             android:name="com.twinsant.android2trello.OAuthActivity"
@@ -29,7 +29,7 @@
         </activity>
         <activity
             android:name="com.twinsant.android2trello.StartActivity"
-            android:label="@string/title_activity_start"
+            android:label="@string/app_name"
             android:noHistory="true" >
                         <intent-filter>
                 <action android:name="android.intent.action.MAIN" />

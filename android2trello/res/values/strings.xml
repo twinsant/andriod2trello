@@ -2,8 +2,6 @@
 <resources>
 
     <string name="app_name">Andrello</string>
-    <string name="menu_settings">Settings</string>
-    <string name="title_activity_start">StartActivity</string>
     <string name="empty_boards">No boards</string>
 	<string name="empty_cards">No cards</string>
 	<string name="add_card">Add</string>
