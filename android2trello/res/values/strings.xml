@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-
     <string name="app_name">Andrello</string>
     <string name="empty_boards">No boards</string>
 	<string name="empty_cards">No cards</string>
 	<string name="add_card">Add</string>
 	<string name="refresh_list">Refresh</string>
 	<string name="cancel">Cancel</string>
+	<string name="loading">Loading...</string>
 </resources>

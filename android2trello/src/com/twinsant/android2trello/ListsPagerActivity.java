@@ -177,6 +177,9 @@ public class ListsPagerActivity extends FragmentActivity {
 
 		@Override
 		public Loader<List<JSONObject>> onCreateLoader(int arg0, Bundle arg1) {
+			View view = getView();
+			TextView textView = (TextView)view.findViewById(android.R.id.empty);
+			textView.setText("Loading...");
 			return new ListsLoader(getActivity(), mId);
 		}
 
@@ -184,6 +187,11 @@ public class ListsPagerActivity extends FragmentActivity {
 		public void onLoadFinished(Loader<List<JSONObject>> loader,
 				List<JSONObject> result) {
 			mAdapter.clear();
+			if (result.size() == 0) {
+				View view = getView();
+				TextView textView = (TextView)view.findViewById(android.R.id.empty);
+				textView.setText(R.string.empty_cards);
+			}
 			
 			Iterator<JSONObject> it = result.iterator();
 			while (it.hasNext()) {
