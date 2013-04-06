@@ -44,10 +44,12 @@ public class OAuthActivity extends Activity {
     	
     	@Override
     	public boolean shouldOverrideUrlLoading(WebView view, String url) {
+    		System.out.println(url);
     		if (url.equals(AndrelloApplication.TRELLO_HOME)) {
+    			System.out.println("Deny");
     			Activity activity = (Activity)mContext;
     			activity.setResult(RESULT_CANCELED);
-    			activity.finishActivity(AndrelloApplication.OAUTH_REQUEST);
+    			activity.finishActivity(AndrelloApplication.OAUTH_REQUEST); //FIXME: not work
     			return true;
     		}
     		URL urlCallbak;

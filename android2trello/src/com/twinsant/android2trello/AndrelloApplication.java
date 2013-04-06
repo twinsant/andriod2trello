@@ -3,6 +3,8 @@ package com.twinsant.android2trello;
 
 import java.net.URLEncoder;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 
@@ -10,6 +12,7 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.scribe.builder.ServiceBuilder;
+import org.scribe.exceptions.OAuthConnectionException;
 import org.scribe.model.OAuthRequest;
 import org.scribe.model.Response;
 import org.scribe.model.Token;
@@ -26,6 +29,7 @@ public class AndrelloApplication extends Application {
 	private static final String TRELLO_CALLBACK = "http://android2trello.twinsant.com/callback";
 	
 	public static final String EXTRA_AUTHURL = "com.twinsant.android2trello.authUrl";
+	public static final String EXTRA_BOARDS = "com.twinsant.android2trello.boards";
 	public static final Object HOST_CALLBACK = "android2trello.twinsant.com";
 	
 	private static final String PREFS_NAME = "com.twinsant.android2treelo.settings";
@@ -34,7 +38,7 @@ public class AndrelloApplication extends Application {
 	public static final String EXTRA_BOARD_ID = "com.twinsant.android2treelo.boardId";
 	
 	public static final int OAUTH_REQUEST = 0;
-	public static final String TRELLO_HOME = "https://trello.com/home";
+	public static final String TRELLO_HOME = "https://trello.com/";
 	
 	private OAuthService trello;
 	private Token requestToken;
@@ -101,18 +105,35 @@ public class AndrelloApplication extends Application {
 		
 		OAuthRequest request = new OAuthRequest(Verb.GET, "https://trello.com/1/members/me?fields=username&boards=open&board_fields=name");
         trello.signRequest(loadAccessToken(), request); // the access token from step 4
-        Response response = request.send();
-        try {
+        
+    	try {
+    		Response response = request.send();
+    		
 			JSONObject user = new JSONObject(response.getBody());
 			JSONArray boardsArray = user.getJSONArray("boards");
 			for (int i=0;i<boardsArray.length();i++) {
 				JSONObject board = boardsArray.getJSONObject(i);
 				boards.add(board);
 			}
+			Collections.sort(boards, new Comparator<JSONObject>() {
+
+				@Override
+				public int compare(JSONObject lhs, JSONObject rhs) {
+					try {
+						return lhs.getString("name").compareToIgnoreCase(rhs.getString("name"));
+					} catch (JSONException e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					}
+					return 0;
+				}});
 			cache.put("boards", boards);
 		} catch (JSONException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
+		} catch (OAuthConnectionException e) {
+			e.printStackTrace();
+			return null;
 		}
         
 		return boards;
@@ -205,6 +226,20 @@ public class AndrelloApplication extends Application {
 
 	public void clear_list_cache(String listId) {
 		cache.remove("cards" + listId);
+	}
+
+	public String getBoardName(String board_id) {
+		try {
+			for (JSONObject json : cache.get("boards")) {
+				String _board_id = json.getString("id");
+				if (_board_id.equals(board_id)) {
+					return json.getString("name");
+				}
+			}
+		} catch (JSONException e) {
+			e.printStackTrace();
+		}
+		return null;
 	}
 
 }
