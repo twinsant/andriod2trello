@@ -31,10 +31,10 @@
             android:name="com.twinsant.android2trello.StartActivity"
             android:label="@string/app_name"
             android:noHistory="true" >
-                        <intent-filter>
+            <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.LAUNCHER" />
-            </intent-filter>
+            </intent-filter>           
         </activity>
         <receiver android:name="AndrelloWidgetProvider">
             <intent-filter>

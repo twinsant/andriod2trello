@@ -12,6 +12,7 @@ import android.os.Bundle;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.LoaderManager;
 import android.support.v4.content.Loader;
+import android.util.Log;
 import android.content.Context;
 import android.content.Intent;
 
@@ -41,10 +42,10 @@ public class StartActivity extends FragmentActivity
 	protected void onActivityResult(int requestCode, int resultCode) {
 		if (requestCode == AndrelloApplication.OAUTH_REQUEST) {
 			if (resultCode == RESULT_OK) {
-				System.out.println("authed");
+				Log.d(StartActivity.class.getName(), "authed");
 				getSupportLoaderManager().initLoader(0, null, this);
 			}else{
-				System.out.println("Denied");
+				Log.d(StartActivity.class.getName(), "denied");
 			}
 		}
 	}
@@ -94,6 +95,6 @@ public class StartActivity extends FragmentActivity
 
 	@Override
 	public void onLoaderReset(Loader<List<JSONObject>> arg0) {
-		System.out.println("onLoaderReset");
+		Log.d(StartActivity.class.getName(), "onLoaderReset");
 	}
 }

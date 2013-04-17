@@ -10,6 +10,7 @@ import android.os.Bundle;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
+import android.util.Log;
 import android.webkit.JsResult;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
@@ -44,9 +45,9 @@ public class OAuthActivity extends Activity {
     	
     	@Override
     	public boolean shouldOverrideUrlLoading(WebView view, String url) {
-    		System.out.println(url);
+    		Log.d(OAuthActivity.class.getName(), url);
     		if (url.equals(AndrelloApplication.TRELLO_HOME)) {
-    			System.out.println("Deny");
+    			Log.d(OAuthActivity.class.getName(), "Deny");
     			Activity activity = (Activity)mContext;
     			activity.setResult(RESULT_CANCELED);
     			activity.finishActivity(AndrelloApplication.OAUTH_REQUEST); //FIXME: not work

@@ -18,12 +18,16 @@ import android.support.v4.app.ListFragment;
 import android.support.v4.app.LoaderManager;
 import android.support.v4.content.Loader;
 import android.support.v4.view.ViewPager;
+import android.util.Log;
 import android.util.SparseArray;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
+import android.widget.AdapterView.OnItemClickListener;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
+import android.widget.ListView;
 import android.widget.TextView;
 
 
@@ -162,6 +166,7 @@ public class ListsPagerActivity extends FragmentActivity {
 					fragment.getLoaderManager().restartLoader(0, null, fragment);
 				}
 			});
+			
 			return view;
 		}
 
@@ -192,24 +197,36 @@ public class ListsPagerActivity extends FragmentActivity {
 				TextView textView = (TextView)view.findViewById(android.R.id.empty);
 				textView.setText(R.string.empty_cards);
 			}
-			
-			Iterator<JSONObject> it = result.iterator();
-			while (it.hasNext()) {
-				JSONObject board = it.next();
-				String name = "Loading...";
-				try {
-					name = board.getString("name");
-				} catch (JSONException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
+			else {
+				Iterator<JSONObject> it = result.iterator();
+				while (it.hasNext()) {
+					JSONObject board = it.next();
+					String name = "Loading...";
+					try {
+						name = board.getString("name");
+					} catch (JSONException e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					}
+					mAdapter.add(name);
 				}
-				mAdapter.add(name);
+				ListView list = this.getListView();
+				list.setOnItemClickListener(new OnItemClickListener() {
+
+					@Override
+					public void onItemClick(AdapterView<?> parent, View view,
+							int position, long id) {
+						String card = mAdapter.getItem(position);
+						AndrelloApplication app = (AndrelloApplication)getActivity().getApplicationContext();
+						app.setWidgetCard(card);
+					}
+				});
 			}
 		}
 
 		@Override
 		public void onLoaderReset(Loader<List<JSONObject>> arg0) {
-			System.out.println("reset");		
+			Log.d(ListsPagerActivity.class.getName(), "reset");
 		}
 		
 		@Override

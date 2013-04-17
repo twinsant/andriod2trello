@@ -5,6 +5,7 @@ import android.appwidget.AppWidgetManager;
 import android.appwidget.AppWidgetProvider;
 import android.content.Context;
 import android.content.Intent;
+import android.util.Log;
 import android.widget.RemoteViews;
 
 public class AndrelloWidgetProvider extends AppWidgetProvider {
@@ -14,7 +15,7 @@ public class AndrelloWidgetProvider extends AppWidgetProvider {
 			int[] appWidgetIds) {
 		final int N = appWidgetIds.length;
 		
-		System.out.println("onUpdate: " + N);
+		Log.d(AndrelloWidgetProvider.class.getName(), "onUpdate: " + N);
 		
 		for (int i=0; i<N; i++) {
 			int appWidgetId = appWidgetIds[i];
@@ -23,6 +24,8 @@ public class AndrelloWidgetProvider extends AppWidgetProvider {
 			
 			RemoteViews views = new RemoteViews(context.getPackageName(), R.layout.andrello_appwidget);
 			views.setOnClickPendingIntent(R.id.card, pendingIntent);
+			AndrelloApplication app = (AndrelloApplication)context.getApplicationContext();
+			views.setTextViewText(R.id.card, app.getWidgetCard());
 			
 			appWidgetManager.updateAppWidget(appWidgetId, views);
 			//super.onUpdate(context, appWidgetManager, appWidgetIds);

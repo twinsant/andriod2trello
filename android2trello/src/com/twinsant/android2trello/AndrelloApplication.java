@@ -22,6 +22,7 @@ import org.scribe.oauth.OAuthService;
 
 import android.app.Application;
 import android.content.SharedPreferences;
+import android.util.Log;
 
 public class AndrelloApplication extends Application {	
 	private static final String TRELLO_KEY = "e65da061e7d7575e01ac1aa758c4ba86";
@@ -35,6 +36,7 @@ public class AndrelloApplication extends Application {
 	private static final String PREFS_NAME = "com.twinsant.android2treelo.settings";
 	private static final String PREFS_NAME_SECRET = "com.twinsant.android2treelo.secret"; // static final String could not s1 + "foo"
 	private static final String PREFS_NAME_TOKEN = "com.twinsant.android2treelo.token";
+	private static final String PREFS_NAME_WIDGET_CARD = "com.twinsant.android2treelo.widget_card";
 	public static final String EXTRA_BOARD_ID = "com.twinsant.android2treelo.boardId";
 	
 	public static final int OAUTH_REQUEST = 0;
@@ -240,6 +242,21 @@ public class AndrelloApplication extends Application {
 			e.printStackTrace();
 		}
 		return null;
+	}
+
+	public String getWidgetCard() {
+		SharedPreferences settings = getSharedPreferences(PREFS_NAME, 0);
+		String widgetCard = settings.getString(PREFS_NAME_WIDGET_CARD, getString(R.string.app_name));
+		return widgetCard;
+	}
+
+	public void setWidgetCard(String card) {
+		Log.d(AndrelloApplication.class.getName(), card);
+		
+		SharedPreferences settings = getSharedPreferences(PREFS_NAME, 0);
+		SharedPreferences.Editor editor = settings.edit();
+		editor.putString(PREFS_NAME_WIDGET_CARD, card);
+		editor.commit();
 	}
 
 }
