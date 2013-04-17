@@ -6,6 +6,8 @@ import java.util.List;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import android.appwidget.AppWidgetManager;
+import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.os.AsyncTask;
@@ -28,6 +30,7 @@ import android.widget.AdapterView.OnItemClickListener;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.ListView;
+import android.widget.RemoteViews;
 import android.widget.TextView;
 
 
@@ -219,6 +222,14 @@ public class ListsPagerActivity extends FragmentActivity {
 						String card = mAdapter.getItem(position);
 						AndrelloApplication app = (AndrelloApplication)getActivity().getApplicationContext();
 						app.setWidgetCard(card);
+						
+						// http://stackoverflow.com/questions/3455123/programmatically-update-widget-from-activity
+						Context context = getActivity();
+						AppWidgetManager appWidgetManager = AppWidgetManager.getInstance(context);
+						RemoteViews remoteViews = new RemoteViews(context.getPackageName(), R.layout.andrello_appwidget);
+						ComponentName thisWidget = new ComponentName(context, AndrelloWidgetProvider.class);
+						remoteViews.setTextViewText(R.id.card, card);
+						appWidgetManager.updateAppWidget(thisWidget, remoteViews);
 					}
 				});
 			}
